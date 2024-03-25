@@ -1,6 +1,8 @@
 #ifndef __SPACE_Y_MATHLIB__
 #define __SPACE_Y_MATHLIB__
 
+#define NULL 0
+
 #include "vec.hpp"
 #include <cmath>
 
