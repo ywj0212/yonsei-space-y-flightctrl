@@ -1,8 +1,6 @@
 #ifndef __SPACE_Y_MATHLIB_SWIZZLING_DECL__
 #define __SPACE_Y_MATHLIB_SWIZZLING_DECL__
 
-#include "tuple.hpp"
-
 #define __VEC2_SWIZZLE_DECL( T ) \
     T##vec2 __xx(); \
     T##vec2 __xy(); \
