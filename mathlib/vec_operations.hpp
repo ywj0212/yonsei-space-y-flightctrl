@@ -4,20 +4,17 @@
 #include <cmath>
 
 #ifndef ARDUINO
-#define PI          3.1415926535897932384626433832795
-#define HALF_PI     1.5707963267948966192313216916398
-#define TWO_PI      6.283185307179586476925286766559
-#define DEG_TO_RAD  0.017453292519943295769236907684886
-#define RAD_TO_DEG  57.295779513082320876798154814105
-#define EULER       2.718281828459045235360287471352
+  #define PI          3.1415926535897932384626433832795
+  #define HALF_PI     1.5707963267948966192313216916398
+  #define TWO_PI      6.283185307179586476925286766559
+  #define DEG_TO_RAD  0.017453292519943295769236907684886
+  #define RAD_TO_DEG  57.295779513082320876798154814105
+  #define EULER       2.718281828459045235360287471352
+#else
+  #undef degrees
+  #undef radians
+  #undef abs
 #endif
-#undef degrees
-#undef radians
-#undef abs
-
-// * bvecn 들에게 hamming distance 제공
-// ? 다른 애들한테도 hamming distance 제공
-// ? bvecn을 제외하고 다른 애들에게 non-euclidian distance 제공
 
 #include "vec.hpp"
 #include "swizzler.hpp"
@@ -601,6 +598,82 @@ bool swizzlerRefEquals(swizzler<T, N, I> &a, swizzler<T, N, J> &b) {
     }\
     return res;\
   }
+#pragma endregion
+#pragma region Distance
+#define __VEC_DISTANCE(T) \
+template <int N>\
+float distance(vec<T, N> &a, vec<T, N> &b) {\
+  return len(a - b);\
+}\
+template <int N, int I>\
+float distance(swizzler<T, N, I> &a, vec<T, N> &b) {\
+  return len(a - b);\
+}\
+template <int N, int I>\
+float distance(vec<T, N> &a, swizzler<T, N, I> &b) {\
+  return len(a - b);\
+}\
+template <int N, int I, int J>\
+float distance(swizzler<T, N, I> &a, swizzler<T, N, J> &b) {\
+  return len(a - b);\
+}
+__VEC_DISTANCE(int)
+__VEC_DISTANCE(float)
+__VEC_DISTANCE(double)
+
+#define __VEC_DDISTANCE(T) \
+template <int N>\
+double ddistance(vec<T, N> &a, vec<T, N> &b) {\
+  return dlen(a - b);\
+}\
+template <int N, int I>\
+double ddistance(swizzler<T, N, I> &a, vec<T, N> &b) {\
+  return dlen(a - b);\
+}\
+template <int N, int I>\
+double ddistance(vec<T, N> &a, swizzler<T, N, I> &b) {\
+  return dlen(a - b);\
+}\
+template <int N, int I, int J>\
+double ddistance(swizzler<T, N, I> &a, swizzler<T, N, J> &b) {\
+  return dlen(a - b);\
+}
+__VEC_DDISTANCE(int)
+__VEC_DDISTANCE(float)
+__VEC_DDISTANCE(double)
+
+template <class T, int N>
+unsigned int hamming_distance(vec<T, N> &a, vec<T, N> &b) {
+  unsigned int mismatch = 0;
+  for(int i = 0; i < N; i++) {
+    mismatch += (a.data[i] != b.data[i]);
+  }
+  return mismatch;
+}
+template <class T, int N, int I>
+unsigned int hamming_distance(swizzler<T, N, I> &a, vec<T, N> &b) {
+  unsigned int mismatch = 0;
+  for(int i = 0; i < N; i++) {
+    mismatch += (__SWIZZLER_VALUE(a, i) != b.data[i]);
+  }
+  return mismatch;
+}
+template <class T, int N, int I>
+unsigned int hamming_distance(vec<T, N> &a, swizzler<T, N, I> &b) {
+  unsigned int mismatch = 0;
+  for(int i = 0; i < N; i++) {
+    mismatch += (a.data[i] != __SWIZZLER_VALUE(b, i));
+  }
+  return mismatch;
+}
+template <class T, int N, int I, int J>
+unsigned int hamming_distance(swizzler<T, N, I> &a, swizzler<T, N, J> &b) {
+  unsigned int mismatch = 0;
+  for(int i = 0; i < N; i++) {
+    mismatch += (__SWIZZLER_VALUE(a, i) != __SWIZZLER_VALUE(b, i));
+  }
+  return mismatch;
+}
 #pragma endregion
 
 __VEC_VEC_FUNC_ARG1_OP(degrees); 
