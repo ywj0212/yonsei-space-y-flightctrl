@@ -49,6 +49,7 @@ struct Module {
       panic();
     }
     strncpy(this -> name, name, MAX_TASK_NAME_LEN);
+    log_info("test");
     if(!module_attach(this)) {
       log_error("Failed to attach module '%s'(init_priority = %d, loop_priority = %d)", this -> name, this -> init_priority, this -> loop_priority);
       panic();
@@ -94,6 +95,8 @@ bool module_detach(unsigned char pid) {
 }
 
 void init_routine() {
+  delay(1000);
+
   buzz_init();
   log_info("Buzzer initialized");
 
@@ -106,12 +109,14 @@ void init_routine() {
   
   while(true) {
     found = false;
+
     for(int i = 0; i < MAX_MODULES; i++) {
       if(ModuleList[i] == NULL) continue;
-      if(!ModuleList[i] -> initialized && ModuleList[i] -> init_priority >= max_priority) {
+      if(!(ModuleList[i] -> initialized) && ModuleList[i] -> init_priority >= max_priority) {
         max_index = i;
         max_priority = ModuleList[i] -> init_priority;
         found = true;
+        break;
       }
     }
     if(found) {
@@ -128,9 +133,10 @@ void init_routine() {
 
   is_init_routine_done = true;
   buzz_success();
-  log_info("Initalization took %.3f seconds.", ((time - millis()) / 1000.0f));
+  log_info("Initalization took %.3f seconds.", ((millis() - time) / 1000.0f));
 }
 
+#include "../../ModuleMgmt.hpp"
 #define SCHEDULER_FREQ 1000 // run loop routine in every millisecond
 MBED_RPI_PICO_Timer ITimer(0);
 
@@ -145,9 +151,9 @@ void setup() {
   log_info("Serial connection has established (color disabled)");
 #endif
 
+  static __Modules Modules;
   init_routine();
 
-  log_info("Serial connection has established");
   if (ITimer.attachInterrupt(SCHEDULER_FREQ, schedulerIRQ)) {
     log_info("Starting ITimer OK, millis() = %lu", millis());
   }
@@ -172,22 +178,17 @@ void schedulerIRQ(uint alarm_num)
       && (RunningModuleList[RunningModuleCount] > ModuleList[i] -> loop_priority)
       && (!ModuleList[i] -> running)  
     ) {
-      noInterrupts();
       ModuleList[i] -> last_execution_time = time;
       ModuleList[i] -> running = true;
       RunningModuleCount++;
 
       log_info("Module '%s'(pid = %d), preemptied previous module", ModuleList[i] -> name, ModuleList[i] -> pid);
       RunningModuleList[RunningModuleCount] = ModuleList[i] -> loop_priority;
-      interrupts();
-
       ModuleList[i] -> loop(time);
 
-      noInterrupts();
       ModuleList[i] -> running = false;
       RunningModuleList[RunningModuleCount] = TASK_PRIORITY_IDLE;
       RunningModuleCount--;
-      interrupts();
     }
   }
   ////////////////////////////////////////////////////////////

@@ -27,6 +27,5 @@ struct __IMUModule : public Module {
     return true;
   }
 };
-static __IMUModule IMUModule;
 
 #endif
