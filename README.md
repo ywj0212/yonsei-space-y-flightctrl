@@ -66,11 +66,8 @@ Quaternion과 EulerAngle을 Float, Double 두가지 타입으로 제공합니다
 
 기본적인 행렬 연산을 제공합니다.
 
-## 2. scheduler
-## 3. utils
-### 3.1. filters
-#### 3.1.1. Kalman Filter
-#### 3.1.2. Discrete Low Pass Filter (DLPF)
-### 3.2. control
-#### 3.2.1. PID Controller
-#### 3.2.2. Second Order System
+## 2. Scheduler
+## 3. Utils
+### 3.1. PID Controller
+### 3.2. Logger
+### 3.3. Integrator
