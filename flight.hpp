@@ -1,13 +1,10 @@
 #ifndef __SPACE_Y_FLIGHT_CONTROLLER__
 #define __SPACE_Y_FLIGHT_CONTROLLER__
 
-#ifdef ARDUINO
 #include <Arduino.h>
-#endif
-#include "mathlib/mathlib.hpp"
-
-// for logger function
-typedef bool (*loggerFcn)(char*);
+#include "modules/lib/mathlib/mathlib.hpp"
+#include "modules/lib/scheduler/scheduler.hpp"
+#include "modules/lib/logger.hpp"
 
  /* 
   * the type of this flight object is a plane, a drone, a rocket.
@@ -27,6 +24,5 @@ typedef bool (*loggerFcn)(char*);
   * how log should be provided? (via function pointer(loggerFcn))
   * formatting provide
   */
-
 
 #endif
