@@ -2,24 +2,18 @@
 #define __SPACE_Y_MATHLIB_VEC_SWIZZLE_OPERATION__
 
 #include <cmath>
-
-#ifndef ARDUINO
-  #define PI          3.1415926535897932384626433832795
-  #define HALF_PI     1.5707963267948966192313216916398
-  #define TWO_PI      6.283185307179586476925286766559
-  #define DEG_TO_RAD  0.017453292519943295769236907684886
-  #define RAD_TO_DEG  57.295779513082320876798154814105
-  #define EULER       2.718281828459045235360287471352
+#ifdef ARDUINO
+#include <Arduino.h>
 #else
-  #undef degrees
-  #undef radians
-  #undef abs
+#define PI 3.141592
 #endif
+#undef abs
+#undef degrees
+#undef radians
 
 #include "vec.hpp"
 #include "swizzler.hpp"
 
-#pragma region Definition of Primitive Math Operations
 int    abs(int    a) { return a < 0    ? -a : a; }
 // float  abs(float  a) { return a < 0.0f ? -a : a; }     // already defined in cmath
 // double abs(double a) { return a < 0.0  ? -a : a; }     // already defined in cmath
@@ -85,8 +79,6 @@ double step(double edge, double x) { return x < edge ? 0.0  : 1.0 ; }
 int    lerp(int    x, int    y, int    a) { return x * (1 - a) + y * a; }
 float  lerp(float  x, float  y, float  a) { return x * (1.0f - a) + y * a; }
 double lerp(double x, double y, double a) { return x * (1.0  - a) + y * a; }
-#pragma endregion
-#pragma region Apply Primitive Math Operations
 #define __VEC_VEC_FUNC_ARG1_OP_T_N(func, T, N) \
   vec<T, N> func(vec<T, N> &a) {\
     vec<T, N> tmp;\
@@ -296,8 +288,6 @@ double lerp(double x, double y, double a) { return x * (1.0  - a) + y * a; }
   __SCALAR_VEC_FUNC_ARG2_OP_T_N(func, int, 4)\
   __SCALAR_VEC_FUNC_ARG2_OP_T_N(func, float, 4)\
   __SCALAR_VEC_FUNC_ARG2_OP_T_N(func, double, 4)
-#pragma endregion
-#pragma region Vector Length and Normalization
 #define __VEC_LEN(T) \
   template <int N>\
   float len(const vec<T, N> &ref) {\
@@ -351,8 +341,6 @@ __VEC_NORMALIZED(double)
 __VEC_DNORMALIZED(int)
 __VEC_DNORMALIZED(float)
 __VEC_DNORMALIZED(double)
-#pragma endregion
-#pragma region Dot and Cross Products
 template <class T, int N>
 T dot(const vec<T, N> &a, const vec<T, N> &b) {
   T result = 0;
@@ -365,8 +353,6 @@ template <class T, int N>
 vec<T, 3> cross(const vec<T, N> &a, const vec<T, N> &b) {
   return (a.y*b.z - a.z*b.y, a.x*b.z - a.z*b.x, a.x*b.y - a.y*b.x);
 }
-#pragma endregion
-#pragma region Vector and Swizzler Default Operations
 template <class T, int N, int I, int J>
 bool swizzlerRefEquals(swizzler<T, N, I> &a, swizzler<T, N, J> &b) {
   return ((&a == &b) && (I == J));
@@ -598,8 +584,6 @@ bool swizzlerRefEquals(swizzler<T, N, I> &a, swizzler<T, N, J> &b) {
     }\
     return res;\
   }
-#pragma endregion
-#pragma region Distance
 #define __VEC_DISTANCE(T) \
 template <int N>\
 float distance(vec<T, N> &a, vec<T, N> &b) {\
@@ -674,7 +658,6 @@ unsigned int hamming_distance(swizzler<T, N, I> &a, swizzler<T, N, J> &b) {
   }
   return mismatch;
 }
-#pragma endregion
 
 __VEC_VEC_FUNC_ARG1_OP(degrees); 
 __VEC_VEC_FUNC_ARG1_OP(radians);

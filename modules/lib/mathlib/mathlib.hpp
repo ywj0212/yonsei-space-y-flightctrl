@@ -5,6 +5,9 @@
 
 #include "vec.hpp"
 #include "swizzler.hpp"
+#include "quarternion.hpp"
+#include "mat.hpp"
 #include "assert.hpp"
+#include "string.hpp"
 
 #endif

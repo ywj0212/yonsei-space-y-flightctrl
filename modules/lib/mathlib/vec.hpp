@@ -9,7 +9,6 @@ struct swizzler;
 #include "swizzling.hpp"
 #include "swizzler.hpp"
 
-#pragma region Define Member and Constructor of Vectors
 #define __VEC_MEMBER(U, member, N) \
 union {\
   U data[N];\
@@ -74,8 +73,6 @@ union {\
     4\
   )\
   vec(W _x, W _y, W _z, W _w) { x = _x; y = _y; z = _z; w = _w; }
-#pragma endregion
-#pragma region Definition of Vectors
 template <class T, int N>
 struct vec {
   __VEC_MEMBER(T, , N)
@@ -126,6 +123,9 @@ template <class T>
 struct vec<T, 4> {
   __VEC_4_MEMBER_W_CONSTRUCTOR(T)
 
+  static const vec zero;
+  static const vec one;
+
   static const vec e1;
   static const vec e2;
   static const vec e3;
@@ -156,7 +156,6 @@ struct vec<bool, 4> {
   static const vec T;
   static const vec F;
 };
-#pragma endregion
 
 typedef vec<bool, 1> bvec1;
 typedef vec<bool, 2> bvec2;
@@ -200,6 +199,8 @@ template <class T> const vec<T, 3> vec<T, 3>::e1      = vec<T, 3>(1, 0, 0);
 template <class T> const vec<T, 3> vec<T, 3>::e2      = vec<T, 3>(0, 1, 0);
 template <class T> const vec<T, 3> vec<T, 3>::e3      = vec<T, 3>(0, 0, 1);
 
+template <class T> const vec<T, 4> vec<T, 4>::zero    = vec<T, 4>(0, 0, 0, 0);
+template <class T> const vec<T, 4> vec<T, 4>::one     = vec<T, 4>(1, 1, 1, 1);
 template <class T> const vec<T, 4> vec<T, 4>::e1      = vec<T, 4>(1, 0, 0, 0);
 template <class T> const vec<T, 4> vec<T, 4>::e2      = vec<T, 4>(0, 1, 0, 0);
 template <class T> const vec<T, 4> vec<T, 4>::e3      = vec<T, 4>(0, 0, 1, 0);
