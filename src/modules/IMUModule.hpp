@@ -15,7 +15,7 @@ struct __IMUModule : public Module {
     float rate = max(IMU.accelerationSampleRate(), IMU.gyroscopeSampleRate()); // 104.0F
     interval = ceil(1000 / rate);
     
-    log_info("[IMU] Samle rate: %.3f", rate);
+    log_info("[IMU] Sample rate: %.3f", rate);
     return true;
   }
   virtual bool loop(unsigned long) {
@@ -27,5 +27,6 @@ struct __IMUModule : public Module {
     return true;
   }
 };
+__IMUModule IMUModule;
 
 #endif
