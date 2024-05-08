@@ -1,20 +1,26 @@
 #ifndef __SPACE_Y_SCHEDULER__
 #define __SPACE_Y_SCHEDULER__
 
-#include <Arduino.h>
-#include <MBED_RPi_Pico_TimerInterrupt.h>
-#include <cstring>
-#include "../logger.hpp"
-
 #define MAX_MODULES 16
 #define MAX_TASK_NAME_LEN 16
 #define TASK_PRIORITY_IDLE 255
+#define TASK_PRIORITY_LOW  200
+#define TASK_PRIORITY_HIGH 100
+#define TASK_PRIORITY_LIVE 0
+
+#include <cstring>
+#include "../logger.hpp"
+
+#ifdef ARDUINO
+#include <Arduino.h>
+#include <MBED_RPi_Pico_TimerInterrupt.h>
 
 #if ( defined(ARDUINO_NANO_RP2040_CONNECT) || defined(ARDUINO_RASPBERRY_PI_PICO) || defined(ARDUINO_ADAFRUIT_FEATHER_RP2040) || \
       defined(ARDUINO_GENERIC_RP2040) ) && defined(ARDUINO_ARCH_MBED)
   #define USING_MBED_RPI_PICO_TIMER_INTERRUPT        true
 #else
   #error This code is intended to run on the MBED RASPBERRY_PI_PICO platform! Please check your Tools->Board setting.
+#endif
 #endif
 
 static bool is_init_routine_done = false;
@@ -43,13 +49,12 @@ struct Module {
   unsigned long interval = -1;
   unsigned long last_execution_time = -1;
 
-  Module(char* name) : attached(false), initialized(false), running(false), init_priority(TASK_PRIORITY_IDLE), loop_priority(TASK_PRIORITY_IDLE), interval(-1), last_execution_time(-1) {
+  Module(const char* name) : attached(false), initialized(false), running(false), init_priority(TASK_PRIORITY_IDLE), loop_priority(TASK_PRIORITY_IDLE), interval(-1), last_execution_time(-1) {
     if(strnlen(name, MAX_TASK_NAME_LEN + 1) > MAX_TASK_NAME_LEN) {
       log_error("The given name '%s' is too long! (init_priority = %d, loop_priority = %d)", name, this -> init_priority, this -> loop_priority);
       panic();
     }
     strncpy(this -> name, name, MAX_TASK_NAME_LEN);
-    log_info("test");
     if(!module_attach(this)) {
       log_error("Failed to attach module '%s'(init_priority = %d, loop_priority = %d)", this -> name, this -> init_priority, this -> loop_priority);
       panic();
@@ -95,8 +100,6 @@ bool module_detach(unsigned char pid) {
 }
 
 void init_routine() {
-  delay(1000);
-
   buzz_init();
   log_info("Buzzer initialized");
 
@@ -136,14 +139,16 @@ void init_routine() {
   log_info("Initalization took %.3f seconds.", ((millis() - time) / 1000.0f));
 }
 
-#include "../../ModuleMgmt.hpp"
-#define SCHEDULER_FREQ 1000 // run loop routine in every millisecond
-MBED_RPI_PICO_Timer ITimer(0);
+// #define SCHEDULER_FREQ 1000 // run loop routine in every millisecond
+// MBED_RPI_PICO_Timer ITimer(0);
+// void schedulerIRQ(uint);
+void scheduler();
 
-void schedulerIRQ(uint);
 void setup() {
+#ifdef ARDUINO
   Serial.begin(9600);
   while (!Serial);
+#endif
 
 #ifdef LOG_USE_COLOR
   log_info("Serial connection has established (color enabled)");
@@ -151,48 +156,78 @@ void setup() {
   log_info("Serial connection has established (color disabled)");
 #endif
 
-  static __Modules Modules;
   init_routine();
 
-  if (ITimer.attachInterrupt(SCHEDULER_FREQ, schedulerIRQ)) {
-    log_info("Starting ITimer OK, millis() = %lu", millis());
-  }
-  else {
-    log_error("Can't set ITimer. Select another freq. or timer");
-    panic();
+  // ! disabled prempetive scheduler
+  // if (ITimer.attachInterrupt(SCHEDULER_FREQ, schedulerIRQ)) {
+  //   log_info("Starting ITimer OK, millis() = %lu", millis());
+  // }
+  // else {
+  //   log_error("Can't set ITimer. Select another freq. or timer");
+  //   panic();
+  // }
+
+  // ! using non-prempetive scheduler
+  while(true) {
+    scheduler();
   }
 }
 
-
-unsigned char RunningModuleList[MAX_MODULES] = {TASK_PRIORITY_IDLE,};
-unsigned char RunningModuleCount = 0;
-void schedulerIRQ(uint alarm_num)
-{
-  TIMER_ISR_START(alarm_num);
-  ///////////////////////////////////////////////////////////
+void scheduler() {
   unsigned long time = millis();
-
+  unsigned char index = MAX_MODULES, max_priority = TASK_PRIORITY_IDLE;
   for(int i = 0; i < MAX_MODULES; i++) {
     if(
-      ((time - ModuleList[i] -> last_execution_time) >= ModuleList[i] -> interval)
-      && (RunningModuleList[RunningModuleCount] > ModuleList[i] -> loop_priority)
-      && (!ModuleList[i] -> running)  
+         (ModuleList[i] != NULL)
+      && ((time - ModuleList[i] -> last_execution_time) >= ModuleList[i] -> interval)
+      && (!ModuleList[i] -> running)
+      && (ModuleList[i] -> loop_priority <= max_priority)
     ) {
-      ModuleList[i] -> last_execution_time = time;
-      ModuleList[i] -> running = true;
-      RunningModuleCount++;
-
-      log_info("Module '%s'(pid = %d), preemptied previous module", ModuleList[i] -> name, ModuleList[i] -> pid);
-      RunningModuleList[RunningModuleCount] = ModuleList[i] -> loop_priority;
-      ModuleList[i] -> loop(time);
-
-      ModuleList[i] -> running = false;
-      RunningModuleList[RunningModuleCount] = TASK_PRIORITY_IDLE;
-      RunningModuleCount--;
+      
+      log_error("test");
+      max_priority = ModuleList[i] -> loop_priority;
+      index = i;
     }
   }
-  ////////////////////////////////////////////////////////////
-  TIMER_ISR_END(alarm_num);
+
+  if(index != MAX_MODULES) {
+    log_info("Module '%s'(pid = %d), executed", ModuleList[index] -> name, ModuleList[index] -> pid);
+    ModuleList[index] -> last_execution_time = time;
+    ModuleList[index] -> running = true;
+    ModuleList[index] -> loop(time);
+    ModuleList[index] -> running = false;
+  }
 }
+
+// unsigned char RunningModuleList[MAX_MODULES] = {TASK_PRIORITY_IDLE,};
+// unsigned char RunningModuleCount = 0;
+// void schedulerIRQ(uint alarm_num) {
+//   TIMER_ISR_START(alarm_num);
+//   // ! do not use Serial related functions in here
+//   ///////////////////////////////////////////////////////////
+//   unsigned long time = millis();
+
+//   for(int i = 0; i < MAX_MODULES; i++) {
+//     if(
+//       ((time - ModuleList[i] -> last_execution_time) >= ModuleList[i] -> interval)
+//       && (RunningModuleList[RunningModuleCount] > ModuleList[i] -> loop_priority)
+//       && (!ModuleList[i] -> running)  
+//     ) {
+//       ModuleList[i] -> last_execution_time = time;
+//       ModuleList[i] -> running = true;
+//       RunningModuleCount++;
+
+//       // log_info("Module '%s'(pid = %d), preemptied previous module", ModuleList[i] -> name, ModuleList[i] -> pid);
+//       RunningModuleList[RunningModuleCount] = ModuleList[i] -> loop_priority;
+//       ModuleList[i] -> loop(time);
+
+//       ModuleList[i] -> running = false;
+//       RunningModuleList[RunningModuleCount] = TASK_PRIORITY_IDLE;
+//       RunningModuleCount--;
+//     }
+//   }
+//   ////////////////////////////////////////////////////////////
+//   TIMER_ISR_END(alarm_num);
+// }
 
 #endif
