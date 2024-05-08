@@ -6,30 +6,25 @@
 template <class T, typename std::enable_if<std::is_floating_point<T>::value, int>::type = 0>
 class Integrator {
 private:
-    T I;
-    unsigned long lastExecutionTime;
+  unsigned long last_time;
 
 public:
-    Integrator() : I(0), previousTime(0) {}
+  T I;
+  Integrator() : I(0), last_time(0) {}
 
-    void reset() {
-        currentValue = 0;
-        previousTime = millis();
-    }
+  void reset() {
+    I = 0;
+    last_time = millis();
+  }
 
-    float integrate(float value) {
-        unsigned long currentTime = millis();
-        unsigned long deltaTime = currentTime - previousTime;
-        previousTime = currentTime;
-        
-        currentValue += value * (deltaTime / 1000.0);
-        return currentValue;
-    }
-
-    float getValue() {
-        return currentValue;
-    }
+  float integrate(float value) {
+    unsigned long current_time = millis();
+    unsigned long delta_time = current_time - last_time;
+    last_time = current_time;
+    
+    I += value * (delta_time / 1000.0);
+    return I;
+  }
 };
-// hasher.
 
 #endif
