@@ -1,20 +1,6 @@
 #ifndef __SPACE_Y_MATHLIB_MAT__
 #define __SPACE_Y_MATHLIB_MAT__
 
-
-// template <class T, int M, int N>
-// struct mat;
-// template <class T, int M, int N>
-// mat<T, M, N>& operator*=(mat<T, M, N> &a, T &scalar);
-// template <class T, int M, int N>
-// mat<T, M, N> operator*(mat<T, M, N> &a, T &scalar);
-// template <class T, int M, int N>
-// mat<T, M, N> operator*(T &scalar, mat<T, M, N> &a);
-// template <class T, int M, int N>
-// mat<T, M, N>& operator/=(mat<T, M, N> &a, T &scalar);
-// template <class T, int M, int N>
-// mat<T, M, N> operator/(mat<T, M, N> &a, T &scalar);
-
 #include <type_traits>
 #include "vec.hpp"
 
@@ -201,13 +187,15 @@ struct mat<T, 3, 3> {
 };
 
 typedef mat<int, 2, 2> imat2x2;
+typedef mat<float, 2, 2> fmat2x2;
 typedef mat<float, 2, 2> mat2x2;
 typedef mat<double, 2, 2> dmat2x2;
 typedef mat<int, 3, 3> imat3x3;
+typedef mat<float, 3, 3> fmat3x3;
 typedef mat<float, 3, 3> mat3x3;
 typedef mat<double, 3, 3> dmat3x3;
 
-template <class T, int M, int N> bool          operator==(mat<T, M, N> &a, mat<T, M, N> &b) {
+template <class T, int M, int N> bool                   operator==(const mat<T, M, N> &a, const mat<T, M, N> &b) {
   bool result = true;
   for(int i = 0; i < M; i++) {
     for(int j = 0; j < N; j++) {
@@ -216,7 +204,7 @@ template <class T, int M, int N> bool          operator==(mat<T, M, N> &a, mat<T
   }
   return result;
 }
-template <class T, int M, int N> bool          operator!=(mat<T, M, N> &a, mat<T, M, N> &b) {
+template <class T, int M, int N> bool                   operator!=(const mat<T, M, N> &a, const mat<T, M, N> &b) {
   bool result = false;
   for(int i = 0; i < M; i++) {
     for(int j = 0; j < N; j++) {
@@ -225,7 +213,7 @@ template <class T, int M, int N> bool          operator!=(mat<T, M, N> &a, mat<T
   }
   return result;
 }
-template <class T, int M, int N> mat<T, M, N>& operator*=(mat<T, M, N> &a, T scalar) {
+template <class T, int M, int N> mat<T, M, N>&          operator*=(mat<T, M, N> &a, const T scalar) {
   for(int i = 0; i < M; i++) {
     for(int j = 0; j < N; j++) {
       a.data[i][j] *= scalar;
@@ -233,7 +221,7 @@ template <class T, int M, int N> mat<T, M, N>& operator*=(mat<T, M, N> &a, T sca
   }
   return a;
 }
-template <class T, int M, int N> mat<T, M, N>  operator* (mat<T, M, N> a, T scalar) {
+template <class T, int M, int N> mat<T, M, N>           operator* (const mat<T, M, N> &a, const T scalar) {
   mat<T, M, N> result;
   for(int i = 0; i < M; i++) {
     for(int j = 0; j < N; j++) {
@@ -242,7 +230,7 @@ template <class T, int M, int N> mat<T, M, N>  operator* (mat<T, M, N> a, T scal
   }
   return result;
 }
-template <class T, int M, int N> mat<T, M, N>  operator* (T scalar, mat<T, M, N> a) {
+template <class T, int M, int N> mat<T, M, N>           operator* (const T scalar, const mat<T, M, N> &a) {
   mat<T, M, N> result;
   for(int i = 0; i < M; i++) {
     for(int j = 0; j < N; j++) {
@@ -251,7 +239,7 @@ template <class T, int M, int N> mat<T, M, N>  operator* (T scalar, mat<T, M, N>
   }
   return result;
 }
-template <class T, int M, int N> mat<T, M, N>& operator/=(mat<T, M, N> &a, T scalar) {
+template <class T, int M, int N> mat<T, M, N>&          operator/=(mat<T, M, N> &a, const T scalar) {
   for(int i = 0; i < M; i++) {
     for(int j = 0; j < N; j++) {
       a.data[i][j] /= scalar;
@@ -259,7 +247,7 @@ template <class T, int M, int N> mat<T, M, N>& operator/=(mat<T, M, N> &a, T sca
   }
   return a;
 }
-template <class T, int M, int N> mat<T, M, N>  operator/ (mat<T, M, N> a, T scalar) {
+template <class T, int M, int N> mat<T, M, N>           operator/ (const mat<T, M, N> &a, const T scalar) {
   mat<T, M, N> result;
   for(int i = 0; i < M; i++) {
     for(int j = 0; j < N; j++) {
@@ -268,10 +256,17 @@ template <class T, int M, int N> mat<T, M, N>  operator/ (mat<T, M, N> a, T scal
   }
   return result;
 }
+template <class T, int M, int N> vec<T, M>              operator* (const mat<T, M, N> &a, const vec<T, N> &x) {
+  vec<T, M> result;
+  for(int i = 0; i < M; i++) {
+    result.data[i] = dot(a.row(i + 1), x);
+  }
+  return result;
+}
 
-template <class T, int M, int N> ivec2                  dim(mat<T, M, N>)                 { return ivec2(M, N); }
-template <class T, int M, int N> bool                   isSquare(mat<T, M, N>)            { return (N == M); }
-template <class T, int N>        bool                   isIdentity(mat<T, N, N> &a)       {
+template <class T, int M, int N> ivec2                  dim(const mat<T, M, N>)                 { return ivec2(M, N); }
+template <class T, int M, int N> bool                   isSquare(const mat<T, M, N>)            { return (N == M); }
+template <class T, int N>        bool                   isIdentity(const mat<T, N, N> &a)       {
   bool result = true;
   for(int i = 0; i < N; i++) {
     for(int j = 0; j < N; j++) {
@@ -281,36 +276,5 @@ template <class T, int N>        bool                   isIdentity(mat<T, N, N> 
   }
   return result;
 }
-// template <class T, int N, typename = std::enable_if<(N > 1)>>
-// double                 det(mat<T, N, N> &a)              {
-//   if(N == 1) {
-//     return a.data[0][0];
-//   }
-//   else if(N == 2) {
-//     return a.data[0][0] * a.data[1][1] - a.data[0][1] * a.data[1][0];
-//   }
-
-//   int i, j, k, sign = 1;
-//   double result = 0;
-  
-//   if(N > 2) {
-//     mat<T, N-1, N-1> sub;
-//     for(k = 0; k < N; k++) {
-//       for(i = 1; i < N; i++) {
-//         for(j = 0; j < N; j++) {
-//           if(j < k)
-//             sub.data[i - 1][j] = a.data[i][j];
-//           else if(j > k)
-//             sub.data[i - 1][j - 1] = a.data[i][j];
-//         }
-//       }
-//       if(N > 1) {
-//         result += sign * a.data[0][k] * det(sub);
-//         sign = -sign;
-//       }
-//     }
-//   }
-//   return result;
-// }
 
 #endif
