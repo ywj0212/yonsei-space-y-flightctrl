@@ -3,7 +3,7 @@
 
 #include <type_traits>
 
-template <class T, typename std::enable_if<std::is_floating_point<T>::value, int>::type = 0> // order is 1 or 2
+template <class T, typename std::enable_if<std::is_floating_point<T>::value, int>::type = 0>
 class KalmanFilter {
 private:
   T Q = 0.01;  // Process noise covariance
