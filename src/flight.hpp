@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 #include "modules/lib/mathlib/mathlib.hpp"
-#include "modules/lib/scheduler/scheduler.hpp"
+#include "modules/lib/kernel/kernel.hpp"
 #include "modules/lib/logger.hpp"
 
  /* 
