@@ -1,6 +1,6 @@
 #include "dispatcher.hpp"
 
-void init_routine() {
+void init_dispatch() {
   buzz_init();
   log_info("Buzzer initialized");
 
@@ -51,7 +51,7 @@ void setup() {
   log_info("Serial connection has established (color disabled)");
 #endif
 
-  init_routine();
+  init_dispatch();
 
   // ! disabled prempetive scheduler
   // if (ITimer.attachInterrupt(SCHEDULER_FREQ, schedulerIRQ)) {
@@ -64,10 +64,10 @@ void setup() {
 
   // ! using non-prempetive scheduler
   while(true) {
-    scheduler();
+    dispatch();
   }
 }
-void scheduler() {
+void dispatch() {
   unsigned long time = millis();
   unsigned char index = MAX_MODULES, max_priority = TASK_PRIORITY_IDLE;
   for(int i = 0; i < MAX_MODULES; i++) {
