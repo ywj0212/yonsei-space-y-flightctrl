@@ -55,6 +55,6 @@ struct __WifiModule : public Module {
     return true;
   }
 };
-static __WifiModule WifiModule;
+__WifiModule WifiModule;
 
 #endif
