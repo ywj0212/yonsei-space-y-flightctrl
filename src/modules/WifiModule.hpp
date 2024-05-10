@@ -1,5 +1,5 @@
-#ifndef __SPACE_Y_MODULE_IMU__
-#define __SPACE_Y_MODULE_IMU__
+#ifndef __SPACE_Y_MODULE_WIFI__
+#define __SPACE_Y_MODULE_WIFI__
 
 #include "lib/kernel/kernel.hpp"
 #include "lib/kernel/module.hpp"

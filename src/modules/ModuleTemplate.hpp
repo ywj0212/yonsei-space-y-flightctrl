@@ -16,6 +16,6 @@ struct __Module : public Module {
   virtual bool loop(unsigned long time) { return true; }
 };
 // * uncomment the line below and set the module's variable name by replacing `ModuleTemplate`
-// static __Module ModuleTemplate;
+// __Module ModuleTemplate;
 
 #endif
