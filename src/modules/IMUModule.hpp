@@ -3,7 +3,7 @@
 
 #include <Arduino_LSM6DSOX.h>
 #include "lib/mathlib/mathlib.hpp"
-#include "lib/scheduler/scheduler.hpp"
+#include "lib/kernel/kernel.hpp"
 
 struct __IMUModule : public Module {
   vec3 acc, gyro;

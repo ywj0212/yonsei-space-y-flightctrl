@@ -1,7 +1,7 @@
 #ifndef __SPACE_Y_MODULE_NAME__
 #define __SPACE_Y_MODULE_NAME__
 
-#include "lib/scheduler/scheduler.hpp"
+#include "lib/kernel/kernel.hpp"
 
 struct __Module : public Module {
   // * to set name of module replate "NAME"

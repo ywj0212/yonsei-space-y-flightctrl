@@ -1,7 +1,7 @@
 #ifndef __SPACE_Y_MODULE_CONTROLLER__
 #define __SPACE_Y_MODULE_CONTROLLER__
 
-#include "lib/scheduler/scheduler.hpp"
+#include "lib/kernel/kernel.hpp"
 
 struct __ControllerModule : public Module {
   __ControllerModule() : Module("Controller") {}
@@ -10,8 +10,10 @@ struct __ControllerModule : public Module {
     interval = 10;
     return true;
   }
-  virtual bool loop(unsigned long time) { return true; }
+  virtual bool loop(unsigned long time) {
+    return true;
+  }
 };
-static __ControllerModule ControllerModule;
+__ControllerModule ControllerModule;
 
 #endif

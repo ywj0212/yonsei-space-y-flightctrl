@@ -1,7 +1,7 @@
 #ifndef __SPACE_Y_MODULE_IMU__
 #define __SPACE_Y_MODULE_IMU__
 
-#include "lib/scheduler/scheduler.hpp"
+#include "lib/kernel/kernel.hpp"
 #include "lib/logger.hpp"
 #include <SPI.h>
 #include <WiFiNINA.h>

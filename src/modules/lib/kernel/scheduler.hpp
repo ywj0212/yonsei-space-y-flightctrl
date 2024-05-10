@@ -19,7 +19,7 @@
       defined(ARDUINO_GENERIC_RP2040) ) && defined(ARDUINO_ARCH_MBED)
   #define USING_MBED_RPI_PICO_TIMER_INTERRUPT        true
 #else
-  #error This code is intended to run on the MBED RASPBERRY_PI_PICO platform! Please check your Tools->Board setting.
+  #error This code is intended to run on the MBED RASPBERRY_PI_PICO platform! Please check your Tools -> Board setting.
 #endif
 #endif
 
