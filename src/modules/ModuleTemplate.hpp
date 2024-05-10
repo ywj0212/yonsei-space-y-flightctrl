@@ -2,6 +2,7 @@
 #define __SPACE_Y_MODULE_NAME__
 
 #include "lib/kernel/kernel.hpp"
+#include "lib/kernel/module.hpp"
 
 struct __Module : public Module {
   // * to set name of module replate "NAME"

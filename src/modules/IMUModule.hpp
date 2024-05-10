@@ -4,6 +4,7 @@
 #include <Arduino_LSM6DSOX.h>
 #include "lib/mathlib/mathlib.hpp"
 #include "lib/kernel/kernel.hpp"
+#include "lib/kernel/module.hpp"
 
 struct __IMUModule : public Module {
   vec3 acc, gyro;

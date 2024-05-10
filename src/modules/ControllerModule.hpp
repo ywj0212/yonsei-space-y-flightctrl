@@ -2,6 +2,7 @@
 #define __SPACE_Y_MODULE_CONTROLLER__
 
 #include "lib/kernel/kernel.hpp"
+#include "lib/kernel/module.hpp"
 
 struct __ControllerModule : public Module {
   __ControllerModule() : Module("Controller") {}

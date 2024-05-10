@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <RP2040_PWM.h>
 #include "lib/kernel/kernel.hpp"
+#include "lib/kernel/module.hpp"
 #include "lib/mathlib/mathlib.hpp"
 #include "lib/control/pid.hpp"
 
