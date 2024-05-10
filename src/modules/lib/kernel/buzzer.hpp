@@ -1,5 +1,5 @@
-#ifndef __SPACE_Y_BUZZER__
-#define __SPACE_Y_BUZZER__
+#ifndef __SPACE_Y_KERNEL_BUZZER__
+#define __SPACE_Y_KERNEL_BUZZER__
 
 #ifdef ARDUINO
 #include <Arduino.h>

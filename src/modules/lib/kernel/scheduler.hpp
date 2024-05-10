@@ -1,5 +1,5 @@
-#ifndef __SPACE_Y_SCHEDULER__
-#define __SPACE_Y_SCHEDULER__
+#ifndef __SPACE_Y_KERNEL_SCHEDULER__
+#define __SPACE_Y_KERNEL_SCHEDULER__
 
 #define MAX_MODULES 16
 #define MAX_TASK_NAME_LEN 16
