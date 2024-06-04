@@ -36,10 +36,6 @@ extern bool (*log_callback)(const char*);
 #define LOG_COLOR_DEFAULT "\033[0m"
 #endif
 
-int _log_timestamp_header_to_buffer(const char* header, const char* prefix = "", const char* suffix = "");
-int log_no_callback_info(const char * fmt, ...);
-int log_no_callback_warn(const char * fmt, ...);
-int log_no_callback_error(const char * fmt, ...);
 int log_info(const char * fmt, ...);
 int log_warn(const char * fmt, ...);
 int log_error(const char * fmt, ...);

@@ -4,7 +4,7 @@ char STR_BUFFER[__MAX_STR_LEN];
 bool (*log_callback)(const char*) = NULL;
 
 void set_log_callback(bool (*callback)(const char*)) { log_callback = callback; }
-int _log_timestamp_header_to_buffer(const char* header, const char* prefix, const char* suffix) {
+static int _log_timestamp_header_to_buffer(const char* header, const char* prefix = "", const char* suffix = "") {
   unsigned long time = millis();
   int h  = time / 1000 / 60 / 60,
       m  = time / 1000 / 60 % 60,
@@ -12,7 +12,7 @@ int _log_timestamp_header_to_buffer(const char* header, const char* prefix, cons
       ms = time % 1000;
   return snprintf(STR_BUFFER, __MAX_STR_LEN, "%s[%02d:%02d:%02d.%03d %s]:%s ", prefix, h, m, s, ms, header, suffix);
 }
-int log_no_callback_info(const char* fmt, ...) {
+static int log_no_callback_info(const char* fmt, ...) {
 #ifdef LOG_USE_COLOR
   int offset = _log_timestamp_header_to_buffer("INFO", LOG_COLOR_CYAN, LOG_COLOR_WHITE);
 #else
@@ -36,7 +36,7 @@ int log_no_callback_info(const char* fmt, ...) {
 
   return offset;
 }
-int log_no_callback_warn(const char* fmt, ...) {
+static int log_no_callback_warn(const char* fmt, ...) {
 #ifdef LOG_USE_COLOR
   int offset = _log_timestamp_header_to_buffer("WARN", LOG_COLOR_YELLOW);
 #else
@@ -60,7 +60,7 @@ int log_no_callback_warn(const char* fmt, ...) {
   
   return offset;
 }
-int log_no_callback_error(const char* fmt, ...) {
+static int log_no_callback_error(const char* fmt, ...) {
 #ifdef LOG_USE_COLOR
   int offset = _log_timestamp_header_to_buffer("ERROR", LOG_COLOR_RED);
 #else
