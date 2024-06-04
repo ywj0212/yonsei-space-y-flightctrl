@@ -1,20 +1,28 @@
 #include "scheduler.hpp"
 
-Module* ModuleList[MAX_MODULES] = {NULL, };
+Module** ModuleList = NULL;
 
 static int new_pid = 0;
-static bool is_init_dispatched = false;
+bool is_init_dispatched = false;
 
-bool is_init_done() { return is_init_dispatched; }
-void init_done() { is_init_dispatched = true; }
+void module_list_init_check() {
+  if(ModuleList == NULL) {
+    ModuleList = new Module*[MAX_MODULES];
+    for(int j = 0; j < MAX_MODULES; j++) {
+      ModuleList[j] = NULL;
+    }
+  }
+}
 bool module_attach(Module* module) {
+  module_list_init_check();
   for(int i = 0; i < MAX_MODULES; i++) {
+    
     if(ModuleList[i] == NULL) {
       module -> pid = new_pid++;
       module -> attached = true;
       ModuleList[i] = module;
 
-      if(is_init_done()) {
+      if(is_init_dispatched) {
         if(!module -> init(millis())) {
           log_error("Module '%s'(pid = %d, init_priority = %d), initialization failed", ModuleList[i] -> name, ModuleList[i] -> pid, ModuleList[i] -> init_priority);
           panic();
@@ -28,6 +36,7 @@ bool module_attach(Module* module) {
   return false;
 }
 bool module_detach(unsigned char pid) {
+  module_list_init_check();
   for(int i = 0; i < MAX_MODULES; i++) {
     if(ModuleList[i] != NULL && ModuleList[i] -> pid == pid) {
       log_info("Module '%s'(pid = %d) has detached", ModuleList[i] -> name, ModuleList[i] -> pid);

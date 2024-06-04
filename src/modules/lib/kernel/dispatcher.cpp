@@ -1,9 +1,11 @@
 #include "dispatcher.hpp"
+#include "scheduler.hpp"
 
 void init_dispatch() {
+  module_list_init_check();
   buzz_init();
-  log_info("Buzzer initialized");
 
+  log_info("Buzzer initialized");
   log_info("Initalization start");
   buzz_notificate();
   unsigned long time = millis();
@@ -35,9 +37,41 @@ void init_dispatch() {
     else break;
   }
 
-  init_done();
-  buzz_success();
+  is_init_dispatched = true;
   log_info("Initalization took %.3f seconds.", ((millis() - time) / 1000.0f));
+  buzz_success();
+}
+void dispatch() {
+  unsigned long time = millis();
+  // unsigned char index = MAX_MODULES, max_priority = TASK_PRIORITY_IDLE;
+  // for(int i = 0; i < MAX_MODULES; i++) {
+  //   if(
+  //        (ModuleList[i] != NULL)
+  //     && ((time - ModuleList[i] -> last_execution_time) >= ModuleList[i] -> interval)
+  //     && (!ModuleList[i] -> running)
+  //     && (ModuleList[i] -> loop_priority <= max_priority)
+  //   ) {
+  //     max_priority = ModuleList[i] -> loop_priority;
+  //     index = i;
+  //   }
+  // }
+
+  for(int i = 0; i < MAX_MODULES; i++) {
+    if(ModuleList[i] == NULL) continue;
+    if(((time - ModuleList[i] -> last_execution_time) >= (ModuleList[i] -> interval))) {
+      ModuleList[i] -> running = true;
+      ModuleList[i] -> loop(time);
+      ModuleList[i] -> running = false;
+      ModuleList[i] -> last_execution_time = time;
+    }
+  }
+  // if(index != MAX_MODULES) {
+  //   // log_info("Module '%s'(pid = %d), executed", ModuleList[index] -> name, ModuleList[index] -> pid);
+  //   ModuleList[index] -> last_execution_time = time;
+  //   ModuleList[index] -> running = true;
+  //   ModuleList[index] -> loop(time);
+  //   ModuleList[index] -> running = false;
+  // }
 }
 void setup() {
 #ifdef ARDUINO
@@ -65,31 +99,6 @@ void setup() {
   // ! using non-prempetive scheduler
   while(true) {
     dispatch();
-  }
-}
-void dispatch() {
-  unsigned long time = millis();
-  unsigned char index = MAX_MODULES, max_priority = TASK_PRIORITY_IDLE;
-  for(int i = 0; i < MAX_MODULES; i++) {
-    if(
-         (ModuleList[i] != NULL)
-      && ((time - ModuleList[i] -> last_execution_time) >= ModuleList[i] -> interval)
-      && (!ModuleList[i] -> running)
-      && (ModuleList[i] -> loop_priority <= max_priority)
-    ) {
-      
-      log_error("test");
-      max_priority = ModuleList[i] -> loop_priority;
-      index = i;
-    }
-  }
-
-  if(index != MAX_MODULES) {
-    log_info("Module '%s'(pid = %d), executed", ModuleList[index] -> name, ModuleList[index] -> pid);
-    ModuleList[index] -> last_execution_time = time;
-    ModuleList[index] -> running = true;
-    ModuleList[index] -> loop(time);
-    ModuleList[index] -> running = false;
   }
 }
 

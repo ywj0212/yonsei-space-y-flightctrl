@@ -15,10 +15,11 @@
 #include "kernel.hpp"
 #include "module.hpp"
 
-extern Module* ModuleList[MAX_MODULES];
+extern Module** ModuleList;
+extern bool is_init_dispatched;
 
 bool is_init_done();
-void init_done();
+void module_list_init_check();
 bool module_attach(Module* module);
 bool module_detach(unsigned char pid);
 
