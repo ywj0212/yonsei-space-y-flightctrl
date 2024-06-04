@@ -28,9 +28,7 @@ struct __MotorDriverModule : public Module {
   float ratio(float x) {
     return (x < 0 ? 0 : (1 - 1 / (x * 0.1 + 1))) * 100;
   }
-  __MotorDriverModule() : Module("Motor Driver") {
-
-  }
+  __MotorDriverModule() : Module("Motor Driver") {}
 
   virtual bool init(unsigned long time) {
     pinMode(FL, OUTPUT);

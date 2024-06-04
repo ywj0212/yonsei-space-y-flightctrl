@@ -1,11 +1,9 @@
 #ifndef __SPACE_Y_MATHLIB_ASSERT__
 #define __SPACE_Y_MATHLIB_ASSERT__
-#ifndef ARDUINO
 
 #include "vec.hpp"
 #include <cassert>
 
-#pragma region Test for size of vectors
 #define VECTOR_SIZE_ERROR_MESSAGE "Size of vector is invalid!"
 static_assert(sizeof(vec<bool, 1>) == sizeof(bool) * 1, VECTOR_SIZE_ERROR_MESSAGE);
 static_assert(sizeof(vec<bool, 2>) == sizeof(bool) * 2, VECTOR_SIZE_ERROR_MESSAGE);
@@ -30,7 +28,5 @@ static_assert(sizeof(vec<double, 2>) == sizeof(double) * 2, VECTOR_SIZE_ERROR_ME
 static_assert(sizeof(vec<double, 3>) == sizeof(double) * 3, VECTOR_SIZE_ERROR_MESSAGE);
 static_assert(sizeof(vec<double, 4>) == sizeof(double) * 4, VECTOR_SIZE_ERROR_MESSAGE);
 static_assert(sizeof(vec<double, 5>) == sizeof(double) * 5, VECTOR_SIZE_ERROR_MESSAGE);
-#pragma endregion
 
-#endif
 #endif

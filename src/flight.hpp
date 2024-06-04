@@ -2,9 +2,13 @@
 #define __SPACE_Y_FLIGHT_CONTROLLER__
 
 #include <Arduino.h>
+#include "modules/IMUModule.hpp"
+// #include "modules/MotorDriverModule.hpp"
+// #include "modules/BluetoothModule.hpp"
+// #include "modules/WifiModule.hpp"
+// #include "modules/ControllerModule.hpp"
+
 #include "modules/lib/mathlib/mathlib.hpp"
-#include "modules/lib/kernel/kernel.hpp"
-#include "modules/lib/logger.hpp"
 
  /* 
   * the type of this flight object is a plane, a drone, a rocket.

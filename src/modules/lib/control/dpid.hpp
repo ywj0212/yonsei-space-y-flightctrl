@@ -3,7 +3,7 @@
 
 #include <type_traits>
 
-template <class T, typename std::enable_if<std::is_floating_point<T>::value, int>::type = 0>
+template <class T>
 class DualPIDController {
 private:
   T Kp;
